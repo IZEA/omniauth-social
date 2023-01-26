@@ -1,8 +1,11 @@
 # Omniauth::Social
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/omniauth/social`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem has packaged all omniauth gems (omaniauth-facebook, omniauth-twitter, omniauth-tiktok, omniauth-google-oauth2) together. omniauth-tiktok has few chnages as per latest APIs.
 
-TODO: Delete this and the text above, and describe your gem
+ref of the gems: https://github.com/zquestz/omniauth-google-oauth2
+				 https://github.com/arunagw/omniauth-twitter
+				 https://github.com/simi/omniauth-facebook
+				 https://github.com/Lianowar/omniauth-tiktok
 
 ## Installation
 
