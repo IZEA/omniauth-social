@@ -11,7 +11,7 @@ module OmniAuth
         :token_url => 'https://www.linkedin.com/oauth/v2/accessToken'
       }
 
-      option :scope, 'r_liteprofile r_emailaddress'
+      option :scope, 'r_liteprofile r_emailaddress r_basicprofile'
       option :fields, ['id','firstName','lastName','vanityName','profilePicture(displayImage~:playableStreams)']
 
       uid do
