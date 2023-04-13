@@ -12,7 +12,7 @@ module OmniAuth
       }
 
       option :scope, 'r_liteprofile r_emailaddress'
-      option :fields, ['id', 'first-name', 'last-name', 'picture-url', 'email-address']
+      option :fields, ['id','firstName','lastName','profilePicture(displayImage~:playableStreams)']
 
       uid do
         raw_info['id']
@@ -54,42 +54,7 @@ module OmniAuth
       private
 
       def email_address
-        if options.fields.include? 'email-address'
-          fetch_email_address
-          parse_email_address
-        end
-      end
-
-      def fetch_email_address
-        @email_address_response ||= access_token.get(email_address_endpoint).parsed
-      end
-
-      def parse_email_address
-        return unless email_address_available?
-
-        @email_address_response['elements'].first['handle~']['emailAddress']
-      end
-
-      def email_address_available?
-        @email_address_response['elements'] &&
-          @email_address_response['elements'].is_a?(Array) &&
-          @email_address_response['elements'].first &&
-          @email_address_response['elements'].first['handle~']
-      end
-
-      def fields_mapping
-        {
-          'id' => 'id',
-          'first-name' => 'firstName',
-          'last-name' => 'lastName',
-          'picture-url' => 'profilePicture(displayImage~:playableStreams)'
-        }
-      end
-
-      def fields
-        options.fields.each.with_object([]) do |field, result|
-          result << fields_mapping[field] if fields_mapping.has_key? field
-        end
+        access_token.get(email_address_endpoint)&.parsed['elements']&.first&.dig("handle~","emailAddress")
       end
 
       def localized_field field_name
@@ -122,12 +87,12 @@ module OmniAuth
       end
 
       def profile_endpoint
-        "/v2/me?projection=(#{ fields.join(',') })"
+        "/v2/me?projection=(#{ options.fields.join(',') })"
       end
       
       def token_params
         super.tap do |params|
-          params.client_secret = options.client_secret
+          params.redirect_uri = callback_url
         end
       end
     end
