@@ -12,7 +12,7 @@ module OmniAuth
       }
 
       option :scope, 'r_liteprofile r_emailaddress'
-      option :fields, ['id','firstName','lastName','profilePicture(displayImage~:playableStreams)']
+      option :fields, ['id','firstName','lastName','vanityName','profilePicture(displayImage~:playableStreams)']
 
       uid do
         raw_info['id']
@@ -23,7 +23,8 @@ module OmniAuth
           :email => email_address,
           :first_name => localized_field('firstName'),
           :last_name => localized_field('lastName'),
-          :picture_url => picture_url
+          :picture_url => picture_url,
+          :vanity_name => raw_info.dig('vanityName')
         }
       end
 
