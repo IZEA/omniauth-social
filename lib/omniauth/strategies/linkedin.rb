@@ -35,6 +35,7 @@ module OmniAuth
       end
 
       def callback_url
+        return options[:redirect_uri] unless options[:redirect_uri].nil?
         full_host + script_name + callback_path
       end
 
