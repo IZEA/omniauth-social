@@ -41,6 +41,7 @@ module OmniAuth
           params[:access_type] = 'offline' if params[:access_type].nil?
           params['openid.realm'] = params.delete(:openid_realm) unless params[:openid_realm].nil?
 
+          session['omniauth.platform'] = request.params["platform"] if params["platform"]
           session['omniauth.state'] = params[:state] if params[:state]
         end
       end
@@ -71,6 +72,7 @@ module OmniAuth
         hash = {}
         token = nil_or_empty?(access_token['id_token']) ? access_token.token : access_token['id_token']
         hash[:id_token] = token
+        hash[:platform] = session['omniauth.platform']
         if !options[:skip_jwt] && !nil_or_empty?(token)
           decoded = ::JWT.decode(token, nil, false).first
 
