@@ -41,7 +41,7 @@ module OmniAuth
           params[:access_type] = 'offline' if params[:access_type].nil?
           params['openid.realm'] = params.delete(:openid_realm) unless params[:openid_realm].nil?
 
-          session['omniauth.platform'] = request.params["platform"] if params["platform"]
+          session['omniauth.platform'] = request.params["platform"]
           session['omniauth.state'] = params[:state] if params[:state]
         end
       end
