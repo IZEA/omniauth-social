@@ -6,7 +6,7 @@ module OmniAuth
       option :name, "dropbox_oauth2"
       option :client_options, {
         :site               => 'https://api.dropbox.com',
-        :authorize_url      => 'https://www.dropbox.com/oauth2/authorize',
+        :authorize_url      => 'https://www.dropbox.com/oauth2/authorize?token_access_type=offline',
         :token_url          => 'https://api.dropbox.com/oauth2/token',
         :redirect_uri_remove_query => true
       }
