@@ -7,13 +7,13 @@ module OmniAuth
     class TiktokBusiness < OmniAuth::Strategies::OAuth2
       class NoAuthorizationCodeError < StandardError; end
       DEFAULT_SCOPE = 'video.list,video.insights,user.info.basic,biz.creator.info,biz.creator.insights,tcm.order.update,user.info.username,user.info.stats,user.account.type,user.insights,comment.list'
-      USER_INFO_URL = 'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,is_verified,follower_count,following_count,likes_count,profile_deep_link'
+      # USER_INFO_URL = 'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,is_verified,follower_count,following_count,likes_count,profile_deep_link'
 
       option :name, 'tiktok_business'
 
       option :client_options, {
         site: 'https://business-api.tiktok.com',
-        authorize_url: 'https://open-api.tiktok.com/platform/oauth/connect',
+        authorize_url: 'https://business-api.tiktok.com/portal/auth/',
         token_url: 'https://business-api.tiktok.com/open_api/v1.3/tt_user/oauth2/token/',
         stratergy_name: 'tiktok_business'
       }
@@ -54,19 +54,18 @@ module OmniAuth
       end
 
       def authorize_params
-        binding.pry
         super.tap do |params|
           params[:scope] ||= DEFAULT_SCOPE
-          params[:response_type] = 'code'
+          params[:response_type] = 'authorization_code'
           params.delete(:client_id)
-          params[:client_key] = options.client_id
+          params[:app_id] = options.client_id
         end
       end
 
       def token_params
         super.tap do |params|
           params.delete(:client_id)
-          params[:client_key] = options.client_id
+          params[:app_id] = options.client_id
         end
       end
 
