@@ -14,8 +14,13 @@ module OmniAuth
       option :client_options, {
         site: 'https://business-api.tiktok.com',
         authorize_url: 'https://business-api.tiktok.com/portal/auth/',
-        token_url: 'https://business-api.tiktok.com/open_api/v1.3/tt_user/oauth2/token/',
-        stratergy_name: 'tiktok_business'
+        token_url: 'https://business-api.tiktok.com/open_api/v1.3/oauth2/access_token/',
+        stratergy_name: 'tiktok_business',
+        extract_access_token: proc do |client, hash|
+          hash = hash['data']
+          token = hash.delete('access_token') || hash.delete(:access_token)
+          token && ::OAuth2::AccessToken.new(client, token, hash)
+        end
       }
 
       option :authorize_options, %i[scope display auth_type]
@@ -57,15 +62,13 @@ module OmniAuth
         super.tap do |params|
           params[:scope] ||= DEFAULT_SCOPE
           params[:response_type] = 'authorization_code'
-          params.delete(:client_id)
-          params[:app_id] = options.client_id
         end
       end
 
       def token_params
         super.tap do |params|
-          params.delete(:client_id)
           params[:app_id] = options.client_id
+          params[:secret] = options.client_secret
         end
       end
 
