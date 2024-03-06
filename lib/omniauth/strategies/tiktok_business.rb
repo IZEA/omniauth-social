@@ -7,14 +7,14 @@ module OmniAuth
     class TiktokBusiness < OmniAuth::Strategies::OAuth2
       class NoAuthorizationCodeError < StandardError; end
       DEFAULT_SCOPE = 'video.list,video.insights,user.info.basic,biz.creator.info,biz.creator.insights,tcm.order.update,user.info.username,user.info.stats,user.account.type,user.insights,comment.list'
-      # USER_INFO_URL = 'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,is_verified,follower_count,following_count,likes_count,profile_deep_link'
+      USER_INFO_URL = 'https://business-api.tiktok.com/open_api/v1.3/business/get/'
+      DEFAULT_TOKEN_FIELDS = ['username', 'display_name', 'profile_image', 'audience_countries', 'audience_genders', 'likes', 'comments', 'shares', 'followers_count', 'profile_views', 'video_views', 'is_business_account', 'audience_activity']
 
       option :name, 'tiktok_business'
-
       option :client_options, {
         site: 'https://business-api.tiktok.com',
-        authorize_url: 'https://business-api.tiktok.com/portal/auth/',
-        token_url: 'https://business-api.tiktok.com/open_api/v1.3/oauth2/access_token/',
+        authorize_url: 'https://www.tiktok.com/v2/auth/authorize',
+        token_url: 'https://business-api.tiktok.com/open_api/v1.3/tt_user/oauth2/token/',
         stratergy_name: 'tiktok_business',
         extract_access_token: proc do |client, hash|
           hash = hash['data']
@@ -49,8 +49,11 @@ module OmniAuth
       end
 
       def raw_info
+        opts = { headers: { 'Access-Token': access_token.token },
+                params: { business_id: access_token.params["open_id"],
+                          fields: DEFAULT_TOKEN_FIELDS } }
         @raw_info ||= access_token
-                      .get("#{USER_INFO_URL}")
+                      .get("#{USER_INFO_URL}", opts)
                       .parsed || {}
       end
 
@@ -61,14 +64,16 @@ module OmniAuth
       def authorize_params
         super.tap do |params|
           params[:scope] ||= DEFAULT_SCOPE
-          params[:response_type] = 'authorization_code'
+          params[:response_type] = 'code'
+          params.delete(:client_id)
+          params[:client_key] = options.client_id
         end
       end
 
       def token_params
         super.tap do |params|
-          params[:app_id] = options.client_id
-          params[:secret] = options.client_secret
+          params[:client_id] = options.client_id
+          params[:client_secret] = options.client_secret
         end
       end
 
